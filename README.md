@@ -4,11 +4,7 @@
 
 This repository contains a template for a nim project using the
 [shake](http://shakebuild.com/) build system. It can be instantiated with
-[pi](https://github.com/vmchale/project-init).
-
-### Example with pi
-
-To initialize a project with pi:
+[pi](https://github.com/vmchale/project-init). For example:
 
 ```bash
 git clone https://github.com/vmchale/shake-nim.git
