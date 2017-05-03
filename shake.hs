@@ -39,8 +39,9 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     ".nim/main" %> \out -> do
         need [".nim/main.nim"]
+        options <- (read :: String -> [String]) . fromMaybe [] <$> getConfig "NIM_OPT"
         -- the environment variable fixes a bug building nimx with an older version of nim
-        cmd (AddEnv "NIMX_RES_PATH" "123") (Cwd ".nim") ["nim", "c", "main.nim"]
+        cmd (AddEnv "NIMX_RES_PATH" "123") (Cwd ".nim") (["nim", "c"] <> options <> ["main.nim"])
 
     "target/main" %> \out -> do
         need [".nim/main"]

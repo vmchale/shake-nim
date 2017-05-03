@@ -1,5 +1,6 @@
 [files]
 directories = ["src","config"]
+scripts = ["shake.hs"]
 templates = ["LICENSE","README.md","src/main.nim",".gitignore","shake.hs","config/build.cfg"]
 
 [config]
