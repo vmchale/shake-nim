@@ -33,8 +33,9 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         mapM_ (\str -> command_ [] "nimble" ["install", str]) source
 
     ".nim/main.nim" %> \out -> do
-        liftIO $ createDirectoryIfMissing True ".nim"
         source <- fromMaybe "src" <$> getConfig "SRC_DIR"
+        need [ source <> "/main.nim"]
+        liftIO $ createDirectoryIfMissing True ".nim"
         cmd (Cwd ".nim") ["cp", "-r", "../" <> source <> "/main.nim", "."]
 
     ".nim/main" %> \out -> do
