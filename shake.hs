@@ -46,5 +46,4 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
     "target/main" %> \out -> do
         need [".nim/main"]
         liftIO $ createDirectoryIfMissing True "target"
-        unit $ cmd ["ln", "-f", ".nim/main", "target/main"]
-        cmd ["chmod","+x","target/main"]
+        cmd ["ln", "-f", ".nim/main", "target/main"]
