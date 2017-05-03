@@ -4,7 +4,8 @@
     --package shake
     --package directory
 -}
-    
+{-# LANGUAGE DataKinds #-}
+
 import Development.Shake
 import Development.Shake.Config
 import System.Directory
@@ -22,15 +23,27 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         putNormal "cleaning files..." 
         removeFilesAfter "nimcache" ["//*"]
 
+    "run" ~> do
+        need ["target/main"]
+        command [] "source" ["/target/main"]
+
     "configure" ~> do
-        source <- fromMaybe [] <$> getConfig "LIB_DEPENDS"
+        source <- (read :: String -> [String]) . fromMaybe [] <$> getConfig "LIB_DEPENDS"
         putNormal "installing dependencies..."
-        cmd ["nimble", "install", "nimx"]
+        mapM_ (\str -> command_ [] "nimble" ["install", str]) source
+
+    ".nim/main.nim" %> \out -> do
+        liftIO $ createDirectoryIfMissing True ".nim"
+        source <- fromMaybe "src" <$> getConfig "SRC_DIR"
+        cmd (Cwd ".nim") ["cp", "-r", "../" <> source <> "/main.nim", "."]
+
+    ".nim/main" %> \out -> do
+        need [".nim/main.nim"]
+        -- the environment variable fixes a bug building nimx with an older version of nim
+        cmd (AddEnv "NIMX_RES_PATH" "123") (Cwd ".nim") ["nim", "c", "main.nim"]
 
     "target/main" %> \out -> do
-        source <- fromMaybe "src" <$> getConfig "SRC_DIR"
+        need [".nim/main"]
         liftIO $ createDirectoryIfMissing True "target"
-        liftIO $ createDirectoryIfMissing True ".nim"
-        unit $ cmd (Cwd ".nim") ["ln", "-sf", source <> "/main.nim", ".nim/main"]
-        unit $ cmd (AddEnv "NIMX_RES_PATH" "123") (Cwd ".nim") ["nim", "c", "-r", "/main.nim"]
-        cmd ["ln", "-sf", ".nim/main", "target/main"]
+        unit $ cmd ["ln", "-f", ".nim/main", "target/main"]
+        cmd ["chmod","+x","target/main"]

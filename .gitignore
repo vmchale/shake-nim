@@ -4,3 +4,4 @@ nimcache/
 
 ## Shakefile ignores
 .shake/
+target/
