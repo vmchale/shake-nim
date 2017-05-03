@@ -21,7 +21,7 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     "clean" ~> do
         putNormal "cleaning files..." 
-        removeFilesAfter "nimcache" ["//*"]
+        removeFilesAfter ".nim" ["//*"]
 
     "run" ~> do
         need ["target/main"]
