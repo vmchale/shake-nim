@@ -4,7 +4,6 @@
     --package shake
     --package directory
 -}
-{-# LANGUAGE DataKinds #-}
 
 import Development.Shake
 import Development.Shake.Config
@@ -14,6 +13,7 @@ import Data.Monoid
 
 main :: IO ()
 main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasic } $ do
+
     usingConfigFile "config/build.cfg"
 
     want [ "target/main"
