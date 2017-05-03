@@ -54,7 +54,7 @@ install:
 before_script:
     - export PATH="nim-$BRANCH/bin${PATH:+:$PATH}"
 script:
-- ./shake.hs install
+- ./shake.hs 
 
 cache:
   directories:

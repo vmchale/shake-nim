@@ -25,7 +25,7 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     "run" ~> do
         need ["target/main"]
-        command [] "source" ["/target/main"]
+        command [] "./target/main" []
 
     "configure" ~> do
         source <- (read :: String -> [String]) . fromMaybe [] <$> getConfig "LIB_DEPENDS"
