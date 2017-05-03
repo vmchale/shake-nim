@@ -1,0 +1,81 @@
+# This is the simple Travis configuration, which is intended for use
+# on applications which do not require cross-platform and
+# multiple-GHC-version support. For more information and other
+# options, see:
+#
+# https://docs.haskellstack.org/en/stable/travis_ci/
+#
+# Copy these contents into the root directory of your Github project in a file
+# named .travis.yml
+
+# Use new container infrastructure to enable caching
+sudo: false
+
+# Do not choose a language; we provide our own build tools.
+language: c
+
+# Ensure necessary system libraries are present
+addons:
+    apt:
+        packages:
+            - libgmp3-dev
+
+env:
+  - BRANCH=master
+  - BRANCH=devel
+compiler:
+  - gcc
+  - clang
+matrix:
+  allow_failures:
+    - env: BRANCH=devel
+  fast_finish: true
+install:
+  - |
+    if [ ! -x nim-$BRANCH/bin/nim ]; then
+      git clone -b $BRANCH --depth 1 git://github.com/nim-lang/nim nim-$BRANCH/
+      cd nim-$BRANCH
+      git clone --depth 1 git://github.com/nim-lang/csources csources/
+      cd csources
+      sh build.sh
+      cd ..
+      rm -rf csources
+      bin/nim c koch
+      ./koch boot -d:release
+    else
+      cd nim-$BRANCH
+      git fetch origin
+      if ! git merge FETCH_HEAD | grep "Already up-to-date"; then
+        bin/nim c koch
+        ./koch boot -d:release
+      fi
+    fi
+    cd ..
+before_script:
+    - export PATH="nim-$BRANCH/bin${PATH:+:$PATH}"
+script:
+- ./shake.hs install
+
+cache:
+  directories:
+    - nim-master
+    - nim-devel
+    - $HOME/.stack
+
+branches:
+  except:
+    - gh-pages
+
+before_install:
+# Download and unpack the stack executable
+- mkdir -p ~/.local/bin
+- export PATH=$HOME/.local/bin:$PATH
+- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+- chmod a+x ~/.local/bin/stack
+
+#Build dependencies
+install:
+- stack --no-terminal setup --resolver lts-8.12
+- stack install shake --resolver lts-8.12
+- ./shake.hs configure
+

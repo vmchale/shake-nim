@@ -1,0 +1,6 @@
+[files]
+directories = ["src","config"]
+templates = ["LICENSE","README.md","src/main.nim",".gitignore","shake.hs","config/build.cfg"]
+
+[config]
+version_control = "git"
