@@ -1,0 +1,6 @@
+## Nim ignores
+nimcache/
+.nim/
+
+## Shakefile ignores
+.shake/
