@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{- stack --resolver lts-8.12 --install-ghc
+{- stack --resolver lts-8.16 --install-ghc
     runghc
     --package shake
     --package directory
@@ -12,7 +12,7 @@ import Data.Maybe
 import Data.Monoid
 
 main :: IO ()
-main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasic } $ do
+main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasic, shakeProgress = progressSimple } $ do
 
     usingConfigFile "config/build.cfg"
 
@@ -21,6 +21,7 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     "clean" ~> do
         putNormal "cleaning files..." 
+        removeFilesAfter "target" ["//*"]
         removeFilesAfter ".nim" ["//*"]
 
     "run" ~> do
